@@ -1,9 +1,12 @@
 package ecommerce.service
 
 import ecommerce.exception.auth.EmailAlreadyExistsException
+import ecommerce.exception.auth.MemberNotFoundException
 import ecommerce.model.Member
 import ecommerce.model.MemberRole
 import ecommerce.repository.MemberRepository
+import io.jsonwebtoken.security.Keys.password
+import jakarta.transaction.Transactional
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.UUID
@@ -14,27 +17,30 @@ class MemberService(
     private val passwordEncoder: PasswordEncoder,
 ) {
     fun findByEmail(email: String): Member? {
-        return memberRepository.findByEmail(email)
+        return memberRepository.findByEmail(email).orElse(null)
     }
 
+    fun getMemberById(id: UUID): Member {
+        return memberRepository.findById(id)
+            .orElseThrow { MemberNotFoundException("Member with ID $id not found") }
+    }
+
+    @Transactional
     fun createMember(
-        email: String,
-        password: String,
-        role: MemberRole = MemberRole.ROLE_USER,
-        name: String,
+        newMember :Member,
     ): Member {
-        if (memberRepository.findByEmail(email) != null) {
-            throw EmailAlreadyExistsException("Member with email $email already exists")
+        if (memberRepository.existsByEmail(newMember.email)) {
+            throw EmailAlreadyExistsException("Member with email ${newMember.email} already exists")
         }
-        val hashedPassword = passwordEncoder.encode(password)
-        val newMember =
+        val hashedPassword = passwordEncoder.encode(newMember.password)
+        val memberToSave =
             Member(
                 id = UUID.randomUUID(),
-                email = email,
+                email = newMember.email,
                 password = hashedPassword,
-                role = role,
-                name = name,
+                role = newMember.role,
+                name =  newMember.name,
             )
-        return memberRepository.create(newMember)
+        return memberRepository.save(memberToSave)
     }
 }

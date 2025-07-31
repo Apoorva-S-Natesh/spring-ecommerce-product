@@ -25,3 +25,11 @@ CREATE TABLE IF NOT EXISTS cart_items (
     FOREIGN KEY(member_id) REFERENCES members(id) ON DELETE CASCADE,
     FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS product_options (
+    id          BIGINT          PRIMARY KEY AUTO_INCREMENT,
+    name        VARCHAR(255)    UNIQUE NOT NULL,
+    quantity    INT             NOT NULL,
+    product_id  BIGINT          NOT NULL,
+    FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE CASCADE
+)

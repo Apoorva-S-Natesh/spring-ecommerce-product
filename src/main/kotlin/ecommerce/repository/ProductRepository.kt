@@ -1,65 +1,24 @@
 package ecommerce.repository
 
 import ecommerce.model.Product
-import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.jdbc.core.RowMapper
+import ecommerce.model.ProductOption
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
+import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
-import java.sql.ResultSet
 
 @Repository
-class ProductRepository(private val jdbcTemplate: JdbcTemplate) {
-    private val productRowMapper =
-        RowMapper<Product> { rs: ResultSet, _ ->
-            Product(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getDouble("price"),
-                rs.getString("img"),
-                rs.getInt("quantity"),
-            )
-        }
+interface ProductRepository : JpaRepository<Product, Long> {
+        fun existsByName(name: String): Boolean
 
-    fun count(): Int {
-        val sql = "select count(*) from products"
-        return jdbcTemplate.queryForObject(sql, Int::class.java) ?: 0
-    }
+    // Find products where any of their options' names contain a keyword (case-insensitive)
+    // This uses a JOIN implicitly due to the property traversal (options.name)
+    fun findByOptionsNameContainingIgnoreCase(optionName: String): List<Product>
 
-    fun findById(id: Long): Product? {
-        val sql = "select * from products where id = ?"
-        return jdbcTemplate.query(sql, productRowMapper, id).firstOrNull()
-    }
-
-    fun findByName(name: String): Product? {
-        val sql = "select * from products where name = ?"
-        return jdbcTemplate.query(sql, productRowMapper, name).firstOrNull()
-    }
-
-    fun findAllProducts(): List<Product> {
-        val sql = "select id, name, price, img, quantity from products"
-        return jdbcTemplate.query(sql, productRowMapper)
-    }
-
-    fun create(product: Product) {
-        val sql = "insert into products (name, price, img, quantity) values (?, ?, ?, ?)"
-        jdbcTemplate.update(sql, product.name, product.price, product.img, product.quantity)
-    }
-
-    fun update(
-        id: Long,
-        product: Product,
-    ) {
-        val sql = "update products set name = ?, price = ?, img = ?, quantity = ? where id = ?"
-        jdbcTemplate.update(sql, product.name, product.price, product.img, product.quantity, id)
-    }
-
-    fun delete(id: Long) {
-        val sql = "delete from products where id = ?"
-        jdbcTemplate.update(sql, id)
-    }
-
-    fun existsByName(name: String): Boolean {
-        val sql = "select count(*) from products where name = ?"
-        val count = jdbcTemplate.queryForObject(sql, Int::class.java, name)
-        return count != null && count > 0
-    }
+    // Custom query to decrease a specific product option's quantity
+    @Modifying
+    @Query("UPDATE ProductOption po SET po.quantity = po.quantity - :quantity WHERE po.id = :optionId")
+    fun decreaseProductOptionQuantity(@Param("optionId") optionId: Long, @Param("quantity") quantity: Int): Int
 }
+
