@@ -16,10 +16,14 @@ class ProductOption(
     var quantity: Int,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
-    var product: Product,
+//    @JoinColumn(name = "product_id", nullable = false)
+    val product: Product,
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L,
-)
+) {
+    init {
+        require(name.length <= 50)
+    }
+}

@@ -63,3 +63,15 @@
 - [x] Role based access control(Admin only)
   - statistical API endpoints - admins only
   - 401 Unauthorized if user is not authorized
+
+
+[//]: # (how to refactor and migrate)
+[//]: # (first change the repository name to jdbcRepository and then add override keyword to all the functions inside the repositoy. then add an interface called __repository and make the jdbcProductRepository implement it. then click on the override keyword to add the function to the interface)
+
+[//]: # (then create an interface called jpa repository that implements __repository and jpaRepository.)
+
+[//]: # (Now comment the @Repository on the jdbcProductRepository. so now we have only one Repository.)
+
+[//]: # (interface productJpaRepository : __repository, jpaRepository<Product, Long>)
+
+[//]: # (The tests have to follow F.I.R.S.T principle)

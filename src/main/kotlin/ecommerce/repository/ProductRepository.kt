@@ -23,5 +23,7 @@ interface ProductRepository : JpaRepository<Product, Long> {
     @Modifying
     @Query("UPDATE ProductOption po SET po.quantity = po.quantity - :quantity WHERE po.id = :optionId")
     fun decreaseProductOptionQuantity(@Param("optionId") optionId: Long, @Param("quantity") quantity: Int): Int
+
+    fun selectByProduct(product: Product): ProductOption
 }
 
