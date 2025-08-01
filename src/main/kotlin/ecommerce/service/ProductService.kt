@@ -21,6 +21,14 @@ class ProductService(private val productRepository: ProductRepository) {
     fun getAllProducts(page: Int, size: Int, sortBy: String): Page<Product> {
         val pageable = PageRequest.of(page, size, Sort.by(sortBy))
         return productRepository.findAll(pageable)
+        /*
+        *val pageable: Pageable = PageRequest.of(0, 10)
+You're not creating an instance of the Pageable interface. Instead:
+
+PageRequest.of(0, 10) creates an instance of the PageRequest class
+PageRequest is a concrete class that implements the Pageable interface
+The variable pageable holds a reference to this PageRequest instance, but its type is declared as Pageable
+        * */
     }
     fun getProductById(id: Long): Product =
         productRepository.findById(id).orElseThrow { ProductNotFoundException("Product with ID $id not found") }
