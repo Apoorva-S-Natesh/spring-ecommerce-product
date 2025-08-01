@@ -1,11 +1,14 @@
 package ecommerce.controller.product
 
+import com.fasterxml.jackson.databind.util.ClassUtil.defaultValue
 import ecommerce.dto.product.ProductRequest
 import ecommerce.dto.product.ProductResponse
+import ecommerce.model.Product
 import ecommerce.service.ProductService
 import ecommerce.utils.toModel
 import ecommerce.utils.toResponse
 import jakarta.validation.Valid
+import org.springframework.data.domain.Page
 import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.net.URI
 
@@ -39,9 +43,15 @@ class ProductController(private val productService: ProductService) {
     }
 
     @GetMapping("")
-    fun getProducts(): ResponseEntity<List<ProductResponse>> {
-        val products = productService.getAllProducts().map { it.toResponse() }
-        return ResponseEntity.ok(products)
+    fun getProducts(
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "10")size: Int,
+        @RequestParam(defaultValue = "name")sortBy: String
+    ) : Page<Product> {
+//    ): ResponseEntity<List<ProductResponse>> {
+//        val products = productService.getAllProducts().map { it.toResponse() }
+//        return ResponseEntity.ok(products)
+        return productService.getAllProducts(page, size, sortBy)
     }
 
     @PutMapping("{id}")

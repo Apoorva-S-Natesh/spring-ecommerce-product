@@ -28,7 +28,6 @@ class Product(
     // it will be deleted from the database.
     // fetch = FetchType.LAZY is generally preferred for performance for OneToMany relationships.
     @OneToMany(mappedBy = "product", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name="product_id")
     var options: MutableSet<ProductOption> = mutableSetOf() // Using Set for uniqueness of options within a product
 ) {
     //add a product option, ensuring uniqueness by name

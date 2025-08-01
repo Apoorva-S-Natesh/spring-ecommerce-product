@@ -9,13 +9,19 @@ import ecommerce.model.Product
 import ecommerce.model.ProductOption
 import ecommerce.repository.ProductRepository
 import jakarta.transaction.Transactional
+import org.hibernate.query.Page.page
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.stereotype.Service
 
 @Service
 class ProductService(private val productRepository: ProductRepository) {
-    fun getAllProducts(): List<Product> = productRepository.findAll()
-
+    fun getAllProducts(page: Int, size: Int, sortBy: String): Page<Product> {
+        val pageable = PageRequest.of(page, size, Sort.by(sortBy))
+        return productRepository.findAll(pageable)
+    }
     fun getProductById(id: Long): Product =
         productRepository.findById(id).orElseThrow { ProductNotFoundException("Product with ID $id not found") }
 

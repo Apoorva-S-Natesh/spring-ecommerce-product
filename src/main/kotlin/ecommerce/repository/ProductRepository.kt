@@ -2,6 +2,8 @@ package ecommerce.repository
 
 import ecommerce.model.Product
 import ecommerce.model.ProductOption
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ProductRepository : JpaRepository<Product, Long> {
         fun existsByName(name: String): Boolean
+        override fun findAll(pageable: Pageable): Page<Product>
 
     // Find products where any of their options' names contain a keyword (case-insensitive)
     // This uses a JOIN implicitly due to the property traversal (options.name)

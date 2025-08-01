@@ -2,6 +2,8 @@ package ecommerce.model
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import java.util.UUID
@@ -26,6 +28,7 @@ class Member(
     // GenerationType.IDENTITY is usually for auto-incrementing numeric IDs.
     // Let's stick with UUID.randomUUID() for now, generated before persist.
     @Id
+    @GeneratedValue(GenerationType.UUID)
     val id: UUID = UUID.randomUUID(),
 )
 
