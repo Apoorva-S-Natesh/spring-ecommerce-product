@@ -113,7 +113,7 @@ fun test5() {
     }
     /*
     finByName always hits the database, always has to be flushed
-    can call clear on persisitence context
+    can call clear on persistence context
     * */
 
 }
