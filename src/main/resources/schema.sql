@@ -25,3 +25,6 @@ CREATE TABLE IF NOT EXISTS cart_items (
     FOREIGN KEY(member_id) REFERENCES members(id) ON DELETE CASCADE,
     FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE CASCADE
 );
+
+CREATE INDEX idx_cart_item_cover ON cart_item(added_at, product_id);
+CREATE INDEX idx_product_cover ON product(id, name);
